@@ -1,14 +1,17 @@
 package com.library.management.model.document;
 
+import java.time.LocalDate;
+
 public abstract class Document {
-    private String id; // Unique identifier for the document
+    private int id; // Unique identifier for the document
     private String title;
     private String author;
-    private String publicationDate;
+    private LocalDate publicationDate;
+    private String type;
 
     // Constructor
- public Document(String ID, String title, String author ,String publicationDate){
-     this.id = ID;
+ public Document( String title, String author ,LocalDate publicationDate){
+
      this.title = title ;
      this.author = author;
      this.publicationDate = publicationDate;
@@ -18,23 +21,31 @@ public abstract class Document {
         this.author = author;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
     public String getAuthor() {
         return author;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setPublicationDate(String publicationDate) {
+    public void setPublicationDate(LocalDate publicationDate) {
         this.publicationDate = publicationDate;
     }
 
-    public String getPublicationDate() {
+    public LocalDate getPublicationDate() {
         return publicationDate;
     }
 

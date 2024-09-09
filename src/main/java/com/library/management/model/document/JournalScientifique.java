@@ -1,10 +1,12 @@
 package com.library.management.model.document;
 
+import java.time.LocalDate;
+
 public class JournalScientifique extends Document {
     private String domaineRecherche;
 
-    public JournalScientifique(String id, String title, String author, String publicationDate, String domaineRecherche) {
-        super(id, title, author, publicationDate);
+    public JournalScientifique( String title, String author, LocalDate publicationDate, String domaineRecherche) {
+        super( title, author, publicationDate);
         this.domaineRecherche = domaineRecherche;
     }
 
@@ -13,7 +15,7 @@ public class JournalScientifique extends Document {
 
     @Override
     public void displayInfo() {
-        System.out.printf("| %-30s | %-20s | Numéro: %-8d | %-15s | JournalScientifique|\n", getTitle(), getAuthor(), domaineRecherche, getPublicationDate());
+        System.out.printf("| %-30s | %-20s | Domaine de recherche :  %-8s  | %-15s | JournalScientifique|\n", getTitle(), getAuthor(), domaineRecherche, getPublicationDate());
 
     }
 }

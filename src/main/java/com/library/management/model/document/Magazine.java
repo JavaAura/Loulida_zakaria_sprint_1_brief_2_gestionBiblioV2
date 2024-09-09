@@ -1,10 +1,12 @@
 package com.library.management.model.document;
 
+import java.time.LocalDate;
+
 public class Magazine extends Document {
     private String numero;
 
-    public Magazine(String id, String title, String author, String publicationDate, String numero) {
-        super(id, title, author, publicationDate);
+    public Magazine( String title, String author, LocalDate publicationDate, String numero) {
+        super( title, author, publicationDate);
         this.numero = numero;
     }
 
@@ -13,7 +15,7 @@ public class Magazine extends Document {
 
     @Override
     public void displayInfo() {
-        System.out.printf("| %-30s | %-20s | Numéro: %-8d | %-15s | Magazine|\n", getTitle(), getAuthor(), numero, getPublicationDate());
-
+        System.out.printf("| %-30s | %-20s | Numéro: %-8s | %-15s | Magazine|\n", getTitle(), getAuthor(), getNumero(), getPublicationDate());
     }
+
 }
