@@ -1,32 +1,70 @@
 package com.library.management.model.user;
 
-public abstract class Utilisateur {
-    private int id; // Unique identifier for the user
-    private String name;
-    private String email;
+import java.time.LocalDate;
 
-    // Constructor
-    public Utilisateur(int id, String name,String email) {
-        this.id = id;
-        this.name = name;
-        this.email=email;
+public abstract class Utilisateur {
+    private int id;
+    private String nom;
+    private String prenom;
+    private String email;
+    private String motDePasse;
+    private LocalDate dateInscription;
+
+    public Utilisateur(String nom, String prenom, String email, String motDePasse, LocalDate dateInscription) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.motDePasse = motDePasse;
+        this.dateInscription = dateInscription;
     }
 
     // Getters and Setters
-    public Integer getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
     }
 
     public String getEmail() {
         return email;
     }
 
-    // Abstract methods
-    public abstract void displayInfo();
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMotDePasse() {
+        return motDePasse;
+    }
+
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
+    }
+
+    public LocalDate getDateInscription() {
+        return dateInscription;
+    }
+
+    public void setDateInscription(LocalDate dateInscription) {
+        this.dateInscription = dateInscription;
+    }
+    public abstract  void displayInfo();
 }
