@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EtudiantDAO implements UserDAO {
+public class EtudiantDAO  {
 
-    @Override
+
     public void create(Utilisateur user) {
         Etudiant etudiant = (Etudiant) user;
         String sql = "INSERT INTO Etudiant (nom, prenom, email, mot_de_passe, date_inscription, niveau_etudes) VALUES (?, ?, ?, ?, ?, ?)";
@@ -28,7 +28,7 @@ public class EtudiantDAO implements UserDAO {
         }
     }
 
-    @Override
+
     public void update(Utilisateur user) {
         Etudiant etudiant = (Etudiant) user;
         String sql = "UPDATE Etudiant SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, date_inscription = ?, niveau_etudes = ? WHERE id = ?";
@@ -47,7 +47,7 @@ public class EtudiantDAO implements UserDAO {
         }
     }
 
-    @Override
+
     public void delete(int id) {
         String sql = "DELETE FROM Etudiant WHERE id = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -60,7 +60,7 @@ public class EtudiantDAO implements UserDAO {
         }
     }
 
-    @Override
+
     public Utilisateur getUser(int id) {
         String sql = "SELECT * FROM Etudiant WHERE id = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -85,7 +85,7 @@ public class EtudiantDAO implements UserDAO {
         return null; // Return null if no user is found
     }
 
-    @Override
+
     public List<Utilisateur> findAll() {
         List<Utilisateur> etudiants = new ArrayList<>();
         String sql = "SELECT * FROM Etudiant";
