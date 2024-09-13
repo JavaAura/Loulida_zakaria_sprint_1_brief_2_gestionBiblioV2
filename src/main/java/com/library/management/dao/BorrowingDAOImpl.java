@@ -1,5 +1,6 @@
 package com.library.management.dao;
 
+import com.library.management.interfaces.Empruntable;
 import com.library.management.model.Borrowing;
 
 
@@ -7,50 +8,58 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BorrowingDAOImpl  {
+public class BorrowingDAOImpl  implements Empruntable {
 
 
-    public void create(Borrowing borrowing) {
+    public void Emprunter(Borrowing borrowing) {
 
 
-        System.out.println("id in dao "+ borrowing.getUserId()+" "+ Date.valueOf(borrowing.getBorrowingDate()) );
 
-        String sql = "INSERT INTO Borrowing (user_id, document_id, borrowing_date, return_date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Borrowing (user_id, document_id) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, borrowing.getUserId());
             pstmt.setInt(2, borrowing.getDocumentId());
-            pstmt.setDate(3, Date.valueOf(borrowing.getBorrowingDate()));
-            pstmt.setDate(4, borrowing.getReturnDate() != null ? Date.valueOf(borrowing.getReturnDate()) : null);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-
-    public void update(Borrowing borrowing) {
-        String sql = "UPDATE Borrowing SET user_id = ?, document_id = ?, borrowing_date = ?, return_date = ? WHERE id = ?";
+    public boolean checkIfIsBorrowed(int doc_id)  {
+        String sql = "SELECT * FROM borrowing WHERE document_id = ? ";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, borrowing.getUserId());
-            pstmt.setInt(2, borrowing.getDocumentId());
-            pstmt.setDate(3, Date.valueOf(borrowing.getBorrowingDate()));
-            pstmt.setDate(4, borrowing.getReturnDate() != null ? Date.valueOf(borrowing.getReturnDate()) : null);
-            pstmt.setInt(5, borrowing.getId());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, doc_id);
+            ResultSet rs = stmt.executeQuery();
+            return !rs.next();
+        }  catch (SQLException e) {
+        System.out.println("Error: " + e.getMessage());
+    }
+        return false;
+
     }
 
 
-    public void delete(int id) {
-        String sql = "DELETE FROM Borrowing WHERE id = ?";
+
+
+
+
+    public void Retourner(int id) {
+        String sql = "DELETE FROM Borrowing WHERE document_id = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("The document has been successfully returned.");
+            } else {
+                System.out.println("This document is not currently borrowed.");
+            }
+
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -67,10 +76,8 @@ public class BorrowingDAOImpl  {
                 return new Borrowing(
                         rs.getInt("id"),
                         rs.getInt("user_id"),
-                        rs.getInt("document_id"),
-                        rs.getDate("borrowing_date").toLocalDate(),
-                        rs.getDate("return_date") != null ? rs.getDate("return_date").toLocalDate() : null
-                );
+                        rs.getInt("document_id")
+              );
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
@@ -89,10 +96,8 @@ public class BorrowingDAOImpl  {
                 borrowings.add(new Borrowing(
                         rs.getInt("id"),
                         rs.getInt("user_id"),
-                        rs.getInt("document_id"),
-                        rs.getDate("borrowing_date").toLocalDate(),
-                        rs.getDate("return_date") != null ? rs.getDate("return_date").toLocalDate() : null
-                ));
+                        rs.getInt("document_id")
+            ));
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());

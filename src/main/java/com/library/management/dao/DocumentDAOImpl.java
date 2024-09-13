@@ -2,6 +2,7 @@ package com.library.management.dao;
 
 import com.library.management.model.document.*;
 import com.library.management.model.enums.DocumentType;
+import com.library.management.model.enums.Rule;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,21 +11,24 @@ import java.util.List;
 public class DocumentDAOImpl {
 
 
-    public void createLivre(Livre livre)  {
-       String insertLivreSQL = "INSERT INTO livres (title,author, publication_date, isbn) VALUES (?, ?, ?, ?)";
+    public void createLivre(Livre livre) {
+        String insertLivreSQL = "INSERT INTO livres (title, author, publication_date, isbn, rule) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmtLivre = conn.prepareStatement(insertLivreSQL)) {
-//
 
+            stmtLivre.setString(1, livre.getTitle());
+            stmtLivre.setString(2, livre.getAuthor());
+            stmtLivre.setDate(3, Date.valueOf(livre.getPublicationDate()));
+            stmtLivre.setString(4, livre.getIsbn());
 
-                    stmtLivre.setString(1, livre.getTitle());
-                    stmtLivre.setString(2, livre.getAuthor());
-                    stmtLivre.setDate(3, Date.valueOf(livre.getPublicationDate()));
-                    stmtLivre.setString(4, livre.getIsbn());
-                    stmtLivre.executeUpdate();
-System.out.println("livres added successfully");            }
-         catch (SQLException e) {
+            // Set the enum as an object
+            stmtLivre.setObject(5, livre.getRule(), Types.OTHER); // Correctly set enum type
+
+            stmtLivre.executeUpdate();
+            System.out.println("Livre added successfully");
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -32,7 +36,7 @@ System.out.println("livres added successfully");            }
 
 
     public void createMagazine(Magazine magazine) {
-      String insertMagazineSQL = "INSERT INTO magazines ( title, author, publication_date, numero) VALUES (?, ?, ?, ?)";
+      String insertMagazineSQL = "INSERT INTO magazines ( title, author, publication_date, numero,rule) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement  stmtMagazine = conn.prepareStatement(insertMagazineSQL)) {
@@ -41,7 +45,10 @@ System.out.println("livres added successfully");            }
                     stmtMagazine.setString(2, magazine.getAuthor());
                     stmtMagazine.setDate(3, Date.valueOf(magazine.getPublicationDate()));
                     stmtMagazine.setString(4, magazine.getNumero());
-                    stmtMagazine.executeUpdate();
+            // Set the enum as an object
+            stmtMagazine.setObject(5, magazine.getRule(), Types.OTHER); // Correctly set enum type
+
+            stmtMagazine.executeUpdate();
 
             System.out.println("magazines added successfully");
 
@@ -52,7 +59,7 @@ System.out.println("livres added successfully");            }
 
     // Create JournalScientifique
     public void createJournalScientifique(JournalScientifique journalScientifique) {
-      String insertJournalSQL = "INSERT INTO journalscientifiques ( title, author, publication_date, domaine_recherche) VALUES (?, ?, ?, ?)";
+      String insertJournalSQL = "INSERT INTO journalscientifiques ( title, author, publication_date, domaine_recherche,rule) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmtJournal = conn.prepareStatement(insertJournalSQL)) {
@@ -61,7 +68,10 @@ System.out.println("livres added successfully");            }
                     stmtJournal.setString(2, journalScientifique.getAuthor());
                     stmtJournal.setDate(3, Date.valueOf(journalScientifique.getPublicationDate()));
                     stmtJournal.setString(4, journalScientifique.getDomaineRecherche());
-                    stmtJournal.executeUpdate();
+            stmtJournal.setObject(5, journalScientifique.getRule(), Types.OTHER); // Correctly set enum type
+
+
+            stmtJournal.executeUpdate();
 
 
             System.out.println("journalscientifiques added successfully");
@@ -74,7 +84,7 @@ System.out.println("livres added successfully");            }
 
     // Create TheseUniversitaire
     public void createTheseUniversitaire(TheseUniversitaire theseUniversitaire) {
-     String insertTheseSQL = "INSERT INTO theseuniversitaires ( title, author, publication_date, universite, domaine) VALUES ( ?, ?, ?, ?, ?)";
+     String insertTheseSQL = "INSERT INTO theseuniversitaires ( title, author, publication_date, universite, domaine,rule) VALUES ( ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmtThese = conn.prepareStatement(insertTheseSQL)) {
@@ -84,7 +94,9 @@ System.out.println("livres added successfully");            }
                     stmtThese.setDate(3, Date.valueOf(theseUniversitaire.getPublicationDate()));
                     stmtThese.setString(4, theseUniversitaire.getUniversité());
                     stmtThese.setString(5, theseUniversitaire.getDomaine());
-                    stmtThese.executeUpdate();
+            stmtThese.setObject(6, theseUniversitaire.getRule(), Types.OTHER); // Correctly set enum type
+
+            stmtThese.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,11 +118,8 @@ System.out.println("livres added successfully");            }
         }
         return document;
     }
-
-    public Document getDocumentByTitle(String title, DocumentType type)  {
+    public Document getDocumentByTitle(String title, DocumentType type) {
         String query = "";
-
-        // Choose the query based on document type
         switch (type) {
             case livres:
                 query = "SELECT * FROM livres WHERE title LIKE ?";
@@ -125,61 +134,72 @@ System.out.println("livres added successfully");            }
                 query = "SELECT * FROM theseuniversitaires WHERE title LIKE ?";
                 break;
         }
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = conn.prepareStatement(query)){
-        statement.setString(1, "%" + title + "%"); // Use LIKE with wildcards
-        ResultSet resultSet = statement.executeQuery();
 
-        // Parse the result and return the document
-        if (resultSet.next()) {
-            switch (type) {
-                case livres:
-                    return new Livre(
-                            resultSet.getString("title"),
-                            resultSet.getString("author"),
-                            resultSet.getDate("publication_date").toLocalDate(),
-                            resultSet.getString("isbn")
-                    );
-                case magazines:
-                    return new Magazine(
-                            resultSet.getString("title"),
-                            resultSet.getString("author"),
-                            resultSet.getDate("publication_date").toLocalDate(),
-                            resultSet.getString("numero")
-                    );
-                case journalscientifiques:
-                    return new JournalScientifique(
-                            resultSet.getString("title"),
-                            resultSet.getString("author"),
-                            resultSet.getDate("publication_date").toLocalDate(),
-                            resultSet.getString("domaineRecherche")
-                    );
-                case theseuniversitaires:
-                    return new TheseUniversitaire(
-                            resultSet.getString("title"),
-                            resultSet.getString("author"),
-                            resultSet.getDate("publication_date").toLocalDate(),
-                            resultSet.getString("universite"),
-                            resultSet.getString("domaine")
-                    );
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(query)) {
+
+            statement.setString(1, "%" + title + "%");
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Rule rule = Rule.valueOf(resultSet.getString("rule")); // Retrieve rule from DB
+
+                switch (type) {
+                    case livres:
+                        return new Livre(resultSet.getInt("id"),
+                                resultSet.getString("title"),
+                                resultSet.getString("author"),
+                                resultSet.getDate("publication_date").toLocalDate(),
+                                resultSet.getString("isbn"),
+                                rule
+                        );
+                    case magazines:
+                        return new Magazine(resultSet.getInt("id"),
+                                resultSet.getString("title"),
+                                resultSet.getString("author"),
+                                resultSet.getDate("publication_date").toLocalDate(),
+                                resultSet.getString("numero"),
+                                rule
+                        );
+                    case journalscientifiques:
+                        return new JournalScientifique(resultSet.getInt("id"),
+                                resultSet.getString("title"),
+                                resultSet.getString("author"),
+                                resultSet.getDate("publication_date").toLocalDate(),
+                                resultSet.getString("domaineRecherche"),
+                                rule
+                        );
+                    case theseuniversitaires:
+                        return new TheseUniversitaire(resultSet.getInt("id"),
+                                resultSet.getString("title"),
+                                resultSet.getString("author"),
+                                resultSet.getDate("publication_date").toLocalDate(),
+                                resultSet.getString("universite"),
+                                resultSet.getString("domaine"),
+                                rule
+                        );
+                }
             }
-        }}catch (SQLException e){
-            System.out.println("error" + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
         }
 
-        return null; // Return null if no document is found
+        return null;
     }
+
     // Helper method to map ResultSet to Document object
     private Document mapResultSetToDocument(ResultSet rs, String documentType) throws SQLException {
+
+       Rule rule =Rule.valueOf(rs.getString("rule"));
         switch (documentType) {
             case "livres":
-                return new Livre(rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("isbn"));
+                return new Livre(rs.getInt("id"),rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("isbn"),rule);
             case "magazines":
-                return new Magazine(rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("numero"));
+                return new Magazine(rs.getInt("id"), rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("numero"),rule);
             case "journalscientifiques":
-                return new JournalScientifique(rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("domaine_recherche"));
+                return new JournalScientifique(rs.getInt("id"),rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("domaine_recherche"),rule);
             case "theseuniversitaires":
-                return new TheseUniversitaire(rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("universite"), rs.getString("domaine"));
+                return new TheseUniversitaire(rs.getInt("id"),rs.getString("title"), rs.getString("author"), rs.getDate("publication_date").toLocalDate(), rs.getString("universite"), rs.getString("domaine"),rule);
             default:
                 return null;
         }
@@ -189,13 +209,13 @@ System.out.println("livres added successfully");            }
     public void updateDocument(Document document) {
         String query;
         if (document instanceof Livre) {
-            query = "UPDATE livres SET title = ?, author = ?, publication_date = ?, isbn = ? WHERE id = ?";
+            query = "UPDATE livres SET title = ?, author = ?, publication_date = ?, isbn = ?, rule = ? WHERE id = ?";
         } else if (document instanceof Magazine) {
-            query = "UPDATE magazines SET title = ?, author = ?, publication_date = ?, numero = ? WHERE id = ?";
+            query = "UPDATE magazines SET title = ?, author = ?, publication_date = ?, numero = ?, rule = ? WHERE id = ?";
         } else if (document instanceof JournalScientifique) {
-            query = "UPDATE journalscientifiques SET title = ?, author = ?, publication_date = ?, domaine_recherche = ? WHERE id = ?";
+            query = "UPDATE journalscientifiques SET title = ?, author = ?, publication_date = ?, domaine_recherche = ?, rule = ? WHERE id = ?";
         } else if (document instanceof TheseUniversitaire) {
-            query = "UPDATE theseuniversitaires SET title = ?, author = ?, publication_date = ?, universite = ?, domaine = ? WHERE id = ?";
+            query = "UPDATE theseuniversitaires SET title = ?, author = ?, publication_date = ?, universite = ?, domaine = ?, rule = ? WHERE id = ?";
         } else {
             throw new IllegalArgumentException("Unsupported document type");
         }
@@ -209,19 +229,22 @@ System.out.println("livres added successfully");            }
             // Type-specific fields
             if (document instanceof Livre) {
                 stmt.setString(4, ((Livre) document).getIsbn());
-                stmt.setInt(5, document.getId());
+                stmt.setString(5, document.getRule().toString()); // Add rule for Livre
+                stmt.setInt(6, document.getId());
             } else if (document instanceof Magazine) {
                 stmt.setString(4, ((Magazine) document).getNumero());
-                stmt.setInt(5, document.getId());
+                stmt.setString(5, document.getRule().toString()); // Add rule for Magazine
+                stmt.setInt(6, document.getId());
             } else if (document instanceof JournalScientifique) {
                 stmt.setString(4, ((JournalScientifique) document).getDomaineRecherche());
-                stmt.setInt(5, document.getId());
+                stmt.setString(5, document.getRule().toString()); // Add rule for JournalScientifique
+                stmt.setInt(6, document.getId());
             } else if (document instanceof TheseUniversitaire) {
                 stmt.setString(4, ((TheseUniversitaire) document).getUniversité());
                 stmt.setString(5, ((TheseUniversitaire) document).getDomaine());
-                stmt.setInt(6, document.getId());
+                stmt.setString(6, document.getRule().toString()); // Add rule for TheseUniversitaire
+                stmt.setInt(7, document.getId());
             }
-
 
             stmt.executeUpdate();
         } catch (SQLException e) {

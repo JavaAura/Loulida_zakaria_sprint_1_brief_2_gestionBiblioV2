@@ -1,5 +1,7 @@
 package com.library.management.model.document;
 
+import com.library.management.model.enums.Rule;
+
 import java.time.LocalDate;
 
 public abstract class Document {
@@ -8,14 +10,27 @@ public abstract class Document {
     private String author;
     private LocalDate publicationDate;
     private String type;
+    private Rule rule;
+
+    public Document() {
+    }
 
     // Constructor
- public Document( String title, String author ,LocalDate publicationDate){
-
+ public Document(int id, String title, String author ,LocalDate publicationDate, Rule rule){
+this.id= id;
      this.title = title ;
      this.author = author;
      this.publicationDate = publicationDate;
+     this.rule =rule;
  }
+
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    public Rule getRule() {
+        return rule;
+    }
 
     public void setAuthor(String author) {
         this.author = author;
