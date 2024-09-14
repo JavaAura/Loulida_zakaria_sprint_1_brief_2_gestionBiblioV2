@@ -102,13 +102,16 @@ public class DocumentDAOImpl {
             e.printStackTrace();
         }
     }
-    // Read (Retrieve) Document by ID
-    public Document getDocumentById(String id, String documentType) {
+
+
+
+
+   public Document getDocumentById(int id, String documentType) {
         String query = "SELECT * FROM " + documentType + " WHERE id = ?";
         Document document = null;
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, id);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 document = mapResultSetToDocument(rs, documentType);
@@ -118,6 +121,9 @@ public class DocumentDAOImpl {
         }
         return document;
     }
+
+
+
     public Document getDocumentByTitle(String title, DocumentType type) {
         String query = "";
         switch (type) {
@@ -229,20 +235,26 @@ public class DocumentDAOImpl {
             // Type-specific fields
             if (document instanceof Livre) {
                 stmt.setString(4, ((Livre) document).getIsbn());
-                stmt.setString(5, document.getRule().toString()); // Add rule for Livre
+                stmt.setObject(5, document.getRule(), Types.OTHER); // Correctly set enum type
+
                 stmt.setInt(6, document.getId());
             } else if (document instanceof Magazine) {
                 stmt.setString(4, ((Magazine) document).getNumero());
-                stmt.setString(5, document.getRule().toString()); // Add rule for Magazine
+                stmt.setObject(5, document.getRule(), Types.OTHER); // Correctly set enum type
+
                 stmt.setInt(6, document.getId());
             } else if (document instanceof JournalScientifique) {
                 stmt.setString(4, ((JournalScientifique) document).getDomaineRecherche());
-                stmt.setString(5, document.getRule().toString()); // Add rule for JournalScientifique
+
+                stmt.setObject(5, document.getRule(), Types.OTHER); // Correctly set enum type
+
                 stmt.setInt(6, document.getId());
             } else if (document instanceof TheseUniversitaire) {
                 stmt.setString(4, ((TheseUniversitaire) document).getUniversité());
                 stmt.setString(5, ((TheseUniversitaire) document).getDomaine());
-                stmt.setString(6, document.getRule().toString()); // Add rule for TheseUniversitaire
+                // Set the enum as an object
+                stmt.setObject(6, document.getRule(), Types.OTHER); // Correctly set enum type
+
                 stmt.setInt(7, document.getId());
             }
 

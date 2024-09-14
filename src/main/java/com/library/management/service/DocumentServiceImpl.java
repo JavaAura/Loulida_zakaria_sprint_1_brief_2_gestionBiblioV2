@@ -34,9 +34,11 @@ public class DocumentServiceImpl {
     }
 
     // Retrieve a Document by ID (generic)
-    public Document getDocumentById(String id, String documentType) {
+    public Document getDocumentById(int id, String documentType) {
         return documentDAO.getDocumentById(id, documentType);
     }
+
+
 
 
     public Document getDocumentByTitle(String title, DocumentType type) {

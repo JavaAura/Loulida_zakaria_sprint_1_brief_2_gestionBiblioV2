@@ -29,6 +29,13 @@ public class BorrowingService {
         borrowingDAO.Retourner(id);
     }
 
+    public Borrowing getborrowing(int id) {
+       return borrowingDAO.getBorrowing(id);
+
+    }
+
+
+
 
 
     public List<Borrowing> getAllBorrowings() {

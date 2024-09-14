@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GestionBiblothequeVersion2:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GestionBiblothequeVersion2_jar</output-path>
+    <root id="archive" name="GestionBiblothequeVersion2.jar">
+      <element id="module-output" name="GestionBiblothequeVersion2" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/checkerframework/checker-qual/3.5.0/checker-qual-3.5.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/postgresql/postgresql/42.3.1/postgresql-42.3.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

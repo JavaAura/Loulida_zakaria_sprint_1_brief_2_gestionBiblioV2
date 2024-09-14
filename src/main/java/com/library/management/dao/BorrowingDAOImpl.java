@@ -67,7 +67,7 @@ public class BorrowingDAOImpl  implements Empruntable {
 
 
     public Borrowing getBorrowing(int id) {
-        String sql = "SELECT * FROM Borrowing WHERE id = ?";
+        String sql = "SELECT * FROM Borrowing WHERE document_id = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);

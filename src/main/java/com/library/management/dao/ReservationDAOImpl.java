@@ -56,7 +56,7 @@ public class ReservationDAOImpl implements Reservable {
 
 
     public Reservation getReservation(int id) {
-        String sql = "SELECT * FROM Reservation WHERE id = ?";
+        String sql = "SELECT * FROM Reservation WHERE document_id = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);

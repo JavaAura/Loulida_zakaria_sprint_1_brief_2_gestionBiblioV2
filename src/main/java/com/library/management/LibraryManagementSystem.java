@@ -122,7 +122,7 @@ public class LibraryManagementSystem {
     public static void manageBorrowing() {
         System.out.println("Manage Borrowing:");
         System.out.println("1. Add Borrowing");
-        System.out.println("3. return doc ");
+        System.out.println("2. return doc ");
         System.out.println("3. List All Borrowings");
         int choice = scanner.nextInt();
         scanner.nextLine();  // Consume newline
@@ -133,7 +133,7 @@ public class LibraryManagementSystem {
                 break;
 
             case 2:
-                borrowController.ReturnDocument();
+                borrowController.returnDocument();
                 break;
             case 3:
                 borrowController.listAllBorrowings();
